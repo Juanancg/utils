@@ -1,0 +1,36 @@
+{
+    "mesonbuild.configureOnOpen": true,
+    "explorer.confirmDragAndDrop": false,
+    "explorer.confirmDelete": false,
+    "python.formatting.autopep8Args": [
+        "\"python.formatting.autopep8Args\": [     \"--max-line-length=200\" ]"
+    ],
+    "cpp.creator.useHPPEnding": false,
+    "cpp.creator.setPath": true,
+    "C_Cpp.updateChannel": "Insiders",
+    "diffEditor.ignoreTrimWhitespace": false,
+    "sync.gist": "blablablabla",
+    "sync.removeExtensions": false,
+    "sync.autoUpload": true,
+    "sync.forceUpload": true,
+    "editor.formatOnSave": true,
+    "C_Cpp.clang_format_fallbackStyle": "{ BasedOnStyle: Google, IndentWidth: 4, ColumnLimit: 0}",
+    "C_Cpp.clang_format_style": "{ BasedOnStyle: Google, IndentWidth: 4, ColumnLimit: 0}",
+    "todohighlight.defaultStyle": {},
+    "todohighlight.keywords": [
+        {
+            "text": "TODO:",
+            "color": "white",
+            "border": "1px solid purple",
+            "borderRadius": "5px",
+            "backgroundColor": "rgba(131,20,234,.5)"
+        },
+        {
+            "text": "TODO",
+            "color": "white",
+            "border": "1px solid purple",
+            "borderRadius": "5px",
+            "backgroundColor": "rgba(131,20,234,.5)"
+        }
+    ]
+}
