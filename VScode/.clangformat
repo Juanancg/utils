@@ -1,0 +1,19 @@
+---
+BasedOnStyle: LLVM
+AllowShortBlocksOnASingleLine: 'false'
+AllowShortCaseLabelsOnASingleLine: 'false'
+AllowShortIfStatementsOnASingleLine: Never
+AllowShortLoopsOnASingleLine: 'false'
+BreakBeforeBraces: Allman
+ColumnLimit: '140'
+FixNamespaceComments: 'true'
+IndentCaseLabels: 'true'
+IndentWidth: '4'
+NamespaceIndentation: All
+TabWidth: '4'
+UseTab: Never
+AccessModifierOffset: -4
+#IndentAccessModifiers: true
+AlwaysBreakTemplateDeclarations: Yes
+
+...
