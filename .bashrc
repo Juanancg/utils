@@ -61,36 +61,55 @@ esac
 # should be on the output of commands, not on the prompt
 #force_color_prompt=yes
 
+parse_git_branch() {
+  git branch 2>/dev/null | sed -e '/^[^*]/d' -e 's/* \(.*\)/(\1)/'
+}
+
+dockerPS1=""
+inside_docker=no
+if findmnt -n -o FSTYPE / | grep -q "overlay"; then
+  # dockerPS1="docker 🐳> "
+  dockerPS1="\[\033[36m\]docker 🐳> \[\033[0m\]"
+  inside_docker=yes
+fi
+
+# uncomment for a colored prompt, if the terminal has the capability; turned
+# off by default to not distract the user: the focus in a terminal window
+# should be on the output of commands, not on the prompt
+# if [ "$inside_docker" = no ]; then
+#   force_color_prompt=yes
+#   # sudo chmod 666 /var/run/docker.sock
+#   #sudo service docker start
+# fi
+
 if [ -n "$force_color_prompt" ]; then
-    if [ -x /usr/bin/tput ] && tput setaf 1 >&/dev/null; then
+  if [ -x /usr/bin/tput ] && tput setaf 1 >&/dev/null; then
     # We have color support; assume it's compliant with Ecma-48
     # (ISO/IEC-6429). (Lack of such support is extremely rare, and such
     # a case would tend to support setf rather than setaf.)
     color_prompt=yes
-    else
+  else
     color_prompt=
-    fi
+  fi
 fi
 
-parse_git_branch() {
-     git branch 2> /dev/null | sed -e '/^[^*]/d' -e 's/* \(.*\)/(\1)/'
-}
-
 if [ "$color_prompt" = yes ]; then
-    PS1='\[$(tput sgr0)\]\[$(tput sgr0)\]${debian_chroot:+($debian_chroot)}\[\033[01;32m\]\u@\h\[\033[00m\]:\[\033[01;34m\]\w\[\033[00m\]'
+  PS1='\[$(tput sgr0)\]\[$(tput sgr0)\]${debian_chroot:+($debian_chroot)}\[\033[01;32m\]\u@\h\[\033[00m\]:\[\033[01;34m\]\w\[\033[00m\]'
 else
-    PS1='${debian_chroot:+($debian_chroot)}\u@\h:\w\$ '
+  if [ -n "$dockerPS1" ]; then
+    PS1='${debian_chroot:+($debian_chroot)}\u@\h:\w\'
+  else
+    PS1='${debian_chroot:+($debian_chroot)}\u@\h:\w\'
+  fi
 fi
 unset color_prompt force_color_prompt
 
 # If this is an xterm set the title to user@host:dir
 case "$TERM" in
-xterm*|rxvt*)
-    # PS1="\[\e]0;${debian_chroot:+($debian_chroot)}\u@\h: \w\a\]$PS1"
-    PS1="\[\e]0;${debian_chroot:+($debian_chroot)}\u@\h: \w\a\]$PS1\[\e[91m\]\$(parse_git_branch)\[\e[00m\]\$ "
-    ;;
-*)
-    ;;
+xterm* | rxvt*)
+  PS1="\[\e]0;${debian_chroot:+($debian_chroot)}\u@\h: \w\a\]${dockerPS1}$PS1[\e[91m\]\$(parse_git_branch)\[\e[00m\]$ "
+  ;;
+*) ;;
 esac
 
 # enable color support of ls and also add handy aliases
