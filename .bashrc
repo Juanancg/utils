@@ -53,13 +53,8 @@ fi
 
 # set a fancy prompt (non-color, unless we know we "want" color)
 case "$TERM" in
-    xterm-color|*-256color) color_prompt=yes;;
+xterm-color | *-256color) color_prompt=yes ;;
 esac
-
-# uncomment for a colored prompt, if the terminal has the capability; turned
-# off by default to not distract the user: the focus in a terminal window
-# should be on the output of commands, not on the prompt
-#force_color_prompt=yes
 
 parse_git_branch() {
   git branch 2>/dev/null | sed -e '/^[^*]/d' -e 's/* \(.*\)/(\1)/'
@@ -68,8 +63,8 @@ parse_git_branch() {
 dockerPS1=""
 inside_docker=no
 if findmnt -n -o FSTYPE / | grep -q "overlay"; then
-  # dockerPS1="docker 🐳> "
-  dockerPS1="\[\033[36m\]docker 🐳> \[\033[0m\]"
+  dockerPS1="docker 🐳> "
+  # dockerPS1="\[\033[36m\]docker 🐳> \[\033[0m\]"
   inside_docker=yes
 fi
 
@@ -97,9 +92,9 @@ if [ "$color_prompt" = yes ]; then
   PS1='\[$(tput sgr0)\]\[$(tput sgr0)\]${debian_chroot:+($debian_chroot)}\[\033[01;32m\]\u@\h\[\033[00m\]:\[\033[01;34m\]\w\[\033[00m\]'
 else
   if [ -n "$dockerPS1" ]; then
-    PS1='${debian_chroot:+($debian_chroot)}\u@\h:\w\'
+    PS1='\[\033[36m\]${dockerPS1}\[\033[0m\]${debian_chroot:+($debian_chroot)}\u@\h:\w'
   else
-    PS1='${debian_chroot:+($debian_chroot)}\u@\h:\w\'
+    PS1='${debian_chroot:+($debian_chroot)}\u@\h:\w'
   fi
 fi
 unset color_prompt force_color_prompt
@@ -107,7 +102,7 @@ unset color_prompt force_color_prompt
 # If this is an xterm set the title to user@host:dir
 case "$TERM" in
 xterm* | rxvt*)
-  PS1="\[\e]0;${debian_chroot:+($debian_chroot)}\u@\h: \w\a\]${dockerPS1}$PS1[\e[91m\]\$(parse_git_branch)\[\e[00m\]$ "
+  PS1="\[\e]0;${debian_chroot:+($debian_chroot)}\u@\h: \w\a\]$PS1\[\e[91m\]\$(parse_git_branch)\[\e[00m\]\$ "
   ;;
 *) ;;
 esac
