@@ -6,6 +6,8 @@ VERBOSE = True
 LOG_DIR = "/logs/"
 LOG_NAME = "monitor_ssh"
 LOG_FILE_PATH = os.path.join(LOG_DIR, LOG_NAME) + ".log"
+STDOUT_ENABLED = True
+FILE_LOGGING_ENABLED = True
 
 class SingletonExample:
 
@@ -30,29 +32,46 @@ class SingletonExample:
         return 
     
 class SingletonLogger(SingletonExample):
+
+    root_logger = logging.getLogger()
+
     def _init_class(self):
         # Initialize logging
         self._init_logging()
 
     def _init_logging(self):
         if VERBOSE:
-            open_file_mode = "a"
-            if not os.path.exists(LOG_FILE_PATH):
-                # If the file does not exist, create the directory and the file in write mode
-                os.makedirs(os.path.dirname(LOG_FILE_PATH), exist_ok=True)
-                open_file_mode = "w+"
 
-            logging.basicConfig(
-                filename=LOG_FILE_PATH,
-                filemode=open_file_mode,
-                format="%(asctime)s [%(name)s] %(levelname)s: %(message)s",
+            log_formatter = logging.Formatter(
+                "%(asctime)s [%(name)s] %(levelname)s: %(message)s",
                 datefmt="%d-%m-%Y %H:%M:%S",
-                level=logging.DEBUG,
             )
+
+            # Remove any existing handlers to prevent duplication
+            SingletonLogger.root_logger.handlers.clear()
+
+            # Add the logging to file
+            if FILE_LOGGING_ENABLED:
+                open_file_mode = "a"
+
+                # If the file does not exist, create the directory and the file in write mode
+                if not os.path.exists(LOG_FILE_PATH):
+                    os.makedirs(os.path.dirname(LOG_FILE_PATH), exist_ok=True)
+                    open_file_mode = "w+"
+
+                file_handler = logging.FileHandler(filename=LOG_FILE_PATH, mode=open_file_mode)
+                file_handler.setFormatter(log_formatter)
+                SingletonLogger.root_logger.addHandler(file_handler)
+
+            # If console logging is enabled, then add the handler
+            if STDOUT_ENABLED:
+                console_handler = logging.StreamHandler()
+                console_handler.setFormatter(log_formatter)
+                SingletonLogger.root_logger.addHandler(console_handler)
 
     def push_log_msg(self, msg):
         if VERBOSE:
-            logging.error(msg)
+            SingletonLogger.root_logger.error(msg)
 
 # Example usage:
 logger_instance = SingletonLogger()

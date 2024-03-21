@@ -153,3 +153,8 @@ fi
 
 alias dockps='docker ps --format  "table {{.ID}}\t{{.RunningFor}}\t{{.Status}}\t{{.Names}}"'
 alias dockpsa='docker ps -a --format  "table {{.ID}}\t{{.RunningFor}}\t{{.Status}}\t{{.Names}}"'
+
+
+showalias() {
+  grep -E '^(alias|function)' ~/.bashrc
+}
