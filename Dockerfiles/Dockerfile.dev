@@ -1,5 +1,5 @@
 # Basic dockerfile for working with C++ and python programs for development
-FROM ubuntu:20.04
+FROM debian:11
 
 ARG DEBIAN_FRONTEND=noninteractive 
 
@@ -21,6 +21,7 @@ RUN apt-get update \
     vim \
     shellcheck \
     clang-format \
+    libgtest-dev \
     build-essential 
 
 # Set library_path
@@ -29,3 +30,4 @@ ENV LD_LIBRARY_PATH /opt/myprogram/:${LD_LIBRARY_PATH}
 # Set Working directory 
 WORKDIR /opt/myprogram/
 
+CMD ["/bin/bash"]
