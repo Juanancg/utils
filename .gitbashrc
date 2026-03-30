@@ -1,0 +1,179 @@
+# Append history from previous session when opening a new one
+export HISTFILESIZE=10000
+export HISTSIZE=5000
+export HISTFILE=~/.bash_history
+
+# Avoid duplicate entries
+export HISTCONTROL=ignoredups:erasedups
+
+# Share history across multiple sessions
+shopt -s histappend # Append commands to history file
+PROMPT_COMMAND="history -a; history -c; history -r; $PROMPT_COMMAND"
+
+# Function to get the current Git branch
+parse_git_branch() {
+  git rev-parse --abbrev-ref HEAD 2>/dev/null
+}
+
+# Set a Linux-like prompt with Git branch
+export PS1='\[\e[1;32m\]\u@\h\[\e[0m\]:\[\e[1;34m\]\w\[\e[0m\]$(if [ -n "$(parse_git_branch)" ]; then echo " \[\e[1;31m\]($(parse_git_branch))\[\e[0m\]"; fi) \$ '
+
+# Windows Terminal Tab Color Management
+# CSI format: \e[ followed by parameters and ,|
+# Entry 264 is FRAME_BACKGROUND
+# Color Palette - Pastel/Soft Colors (256-color palette)
+COLOR_PASTEL_BLUE=152
+COLOR_PASTEL_PURPLE=176
+COLOR_PASTEL_GREEN=150
+COLOR_PASTEL_PINK=211
+COLOR_PASTEL_YELLOW=229
+COLOR_PASTEL_RED=167
+COLOR_PASTEL_CYAN=159
+COLOR_PASTEL_ORANGE=180
+COLOR_PASTEL_GRAY=248
+COLOR_PASTEL_LAVENDER=183
+COLOR_PASTEL_MINT=157
+COLOR_PASTEL_PEACH=223
+COLOR_PASTEL_BLUE_DARK=25  # Dark blue (#1857a4)
+COLOR_PASTEL_DEFAULT=235  # Default terminal background (#262A33)
+
+set_tab_color() {
+    local color_num=$1
+    # Using DECAC method with 256 color palette
+    printf "\e[2;0;${color_num},|"
+}
+
+# Reset tab color to terminal default
+reset_tab_color() {
+    set_tab_color $COLOR_PASTEL_DEFAULT
+}
+
+# Set terminal title dynamically
+set_title() {
+    echo -ne "\033]0;$1\a"
+}
+
+# Get repository name from current directory
+get_repo_name() {
+    local git_root=$(git rev-parse --show-toplevel 2>/dev/null)
+    if [ $? -eq 0 ] && [ -n "$git_root" ]; then
+        basename "$git_root"
+    else
+        echo "GitBash"
+    fi
+}
+
+# Auto-set title and tab color based on current directory
+auto_set_title_and_color() {
+    local repo_name=$(get_repo_name)
+    set_title "$repo_name"
+
+    case "$PWD" in
+        */juanan*)
+            set_tab_color $COLOR_PASTEL_YELLOW
+            ;;
+        */git*)
+            set_tab_color $COLOR_PASTEL_BLUE_DARK
+            ;;
+        *)
+            # Reset to terminal default when outside repos
+            reset_tab_color
+            ;;
+    esac
+}
+
+# Override cd to auto-change title and tab color
+cd() {
+    builtin cd "$@"
+    auto_set_title_and_color
+}
+
+# Set initial title when shell starts
+auto_set_title_and_color
+
+showalias() {
+  grep -E '^(alias|function)' ~/.bashrc
+}
+
+# Test function for debugging tab colors
+test_colors() {
+    echo "Testing all pastel colors..."
+    
+    set_tab_color $COLOR_PASTEL_BLUE
+    echo "BLUE ... (COLOR_PASTEL_BLUE=$COLOR_PASTEL_BLUE)"
+    sleep 1.5
+    
+    set_tab_color $COLOR_PASTEL_PURPLE
+    echo "PURPLE ... (COLOR_PASTEL_PURPLE=$COLOR_PASTEL_PURPLE)"
+    sleep 1.5
+    
+    set_tab_color $COLOR_PASTEL_GREEN
+    echo "GREEN ... (COLOR_PASTEL_GREEN=$COLOR_PASTEL_GREEN)"
+    sleep 1.5
+    
+    set_tab_color $COLOR_PASTEL_CYAN
+    echo "CYAN ... (COLOR_PASTEL_CYAN=$COLOR_PASTEL_CYAN)"
+    sleep 1.5
+    
+    set_tab_color $COLOR_PASTEL_LAVENDER
+    echo "LAVENDER ... (COLOR_PASTEL_LAVENDER=$COLOR_PASTEL_LAVENDER)"
+    sleep 1.5
+    
+    set_tab_color $COLOR_PASTEL_MINT
+    echo "MINT ... (COLOR_PASTEL_MINT=$COLOR_PASTEL_MINT)"
+    sleep 1.5
+    
+    set_tab_color $COLOR_PASTEL_PINK
+    echo "PINK ... (COLOR_PASTEL_PINK=$COLOR_PASTEL_PINK)"
+    sleep 1.5
+    
+    set_tab_color $COLOR_PASTEL_PEACH
+    echo "PEACH ... (COLOR_PASTEL_PEACH=$COLOR_PASTEL_PEACH)"
+    sleep 1.5
+    
+    set_tab_color $COLOR_PASTEL_YELLOW
+    echo "YELLOW ... (COLOR_PASTEL_YELLOW=$COLOR_PASTEL_YELLOW)"
+    sleep 1.5
+    
+    set_tab_color $COLOR_PASTEL_RED
+    echo "RED ... (COLOR_PASTEL_RED=$COLOR_PASTEL_RED)"
+    sleep 1.5
+    
+    set_tab_color $COLOR_PASTEL_ORANGE
+    echo "ORANGE ... (COLOR_PASTEL_ORANGE=$COLOR_PASTEL_ORANGE)"
+    sleep 1.5
+    
+    set_tab_color $COLOR_PASTEL_GRAY
+    echo "GRAY ... (COLOR_PASTEL_GRAY=$COLOR_PASTEL_GRAY)"
+    echo "Done!"
+}
+
+# Show available color constants and repositories
+show_colors() {
+    echo "Available Color Constants:"
+    echo "  COLOR_PASTEL_BLUE=$COLOR_PASTEL_BLUE"
+    echo "  COLOR_PASTEL_PURPLE=$COLOR_PASTEL_PURPLE"
+    echo "  COLOR_PASTEL_GREEN=$COLOR_PASTEL_GREEN"
+    echo "  COLOR_PASTEL_CYAN=$COLOR_PASTEL_CYAN"
+    echo "  COLOR_PASTEL_LAVENDER=$COLOR_PASTEL_LAVENDER"
+    echo "  COLOR_PASTEL_MINT=$COLOR_PASTEL_MINT"
+    echo "  COLOR_PASTEL_PINK=$COLOR_PASTEL_PINK"
+    echo "  COLOR_PASTEL_PEACH=$COLOR_PASTEL_PEACH"
+    echo "  COLOR_PASTEL_YELLOW=$COLOR_PASTEL_YELLOW"
+    echo "  COLOR_PASTEL_RED=$COLOR_PASTEL_RED"
+    echo "  COLOR_PASTEL_ORANGE=$COLOR_PASTEL_ORANGE"
+    echo "  COLOR_PASTEL_GRAY=$COLOR_PASTEL_GRAY"
+    echo "  COLOR_PASTEL_BLUE_DARK=$COLOR_PASTEL_BLUE_DARK (#1857a4)"
+    echo "  COLOR_PASTEL_DEFAULT=$COLOR_PASTEL_DEFAULT (terminal background #262A33)"
+    echo ""
+    echo "Repository Mappings:"
+    echo "  ~/juanan* → COLOR_PASTEL_YELLOW"
+    echo "  ~/git* → COLOR_PASTEL_BLUE_DARK"
+    echo ""
+    echo "Usage: set_tab_color \$COLOR_PASTEL_BLUE"
+    echo "Or run: test_colors  (preview all colors)"
+}
+
+
+alias npp='"/c/Program Files/Notepad++/notepad++.exe"'
+alias open='explorer.exe'
